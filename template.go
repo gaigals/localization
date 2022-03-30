@@ -90,8 +90,14 @@ func (t *Template) Render(w http.ResponseWriter) error {
 
 	err := t.Template.ExecuteTemplate(w, "layout", t.Data)
 	if err != nil {
+		t.ResetData()
 		return err
 	}
 
+	t.ResetData()
 	return nil
+}
+
+func (t *Template) ResetData() {
+	t.Data = make(TemplateData, 0)
 }
