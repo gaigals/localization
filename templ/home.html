@@ -11,7 +11,15 @@
     <title>Home</title>
 </head>
 <body>
-    {{ Text $Locale $Lang "hello_world" }}
+    <form action="/" method="POST">
+        <button type="submit" name="lang" value="en" style="width: 100px; height: 30px">en</button>
+        <button type="submit" name="lang" value="lv" style="width: 100px; height: 30px">lv</button>
+    </form>
+
+    <h1>{{ Text $Locale $Lang "hello_world" }}</h1>
+
+    <h3>{{ Text $Locale $Lang "content_0" }}</h3>
+    <p>{{ Text $Locale $Lang "content_1" }}</p>
 </body>
 </html>
 {{ end }}
