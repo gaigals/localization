@@ -1,0 +1,17 @@
+{{ define "layout" }}
+
+{{ $Page := . }}
+{{ $Locale := (GetMapValue $Page "Locale") }}
+{{ $Lang := (GetMapValue $Page "Lang") }}
+
+<!DOCTYPE html>
+<html lang={{ $Lang }}>
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+</head>
+<body>
+    {{ Text $Locale $Lang "hello_world" }}
+</body>
+</html>
+{{ end }}
