@@ -15,6 +15,11 @@ dont_translate_case_0: "netulko mani :)"
 dont_translate_case_1:
   - lv: "netulko mani!"
 
+dont_translate_case_2:
+  - lv:
+    - "1 netulkojums"
+    - "2 netulkojumi"
+
 plural_text:
   - en:
     - "1 item"
