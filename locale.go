@@ -6,7 +6,8 @@ import (
 )
 
 type Locale struct {
-	Languages []Language
+	Languages    []Language
+	AllowDefault bool
 }
 
 func (l *Locale) AddLanguages(lang ...string) {
@@ -37,8 +38,15 @@ func (l *Locale) Value(langKey, textKey string) (string, error) {
 	}
 
 	value := lang.Value(textKey)
-	if value == "" {
+	if value == "" && !l.AllowDefault {
 		return "", fmt.Errorf("language '%s' does not contain key '%s'", langKey, textKey)
+	}
+	if value == "" {
+		value = l.Languages[0].Value(textKey)
+		if value == "" {
+			return "", fmt.Errorf("language '%s' (backup) does not contain key '%s'",
+				langKey, textKey)
+		}
 	}
 
 	return value, nil
@@ -57,7 +65,6 @@ func (l *Locale) SetValue(langKey, textKey, value string) error {
 	if !hasLang {
 		return fmt.Errorf("language '%s' does not exist", langKey)
 	}
-
 	lang.SetValue(textKey, value)
 
 	return nil
