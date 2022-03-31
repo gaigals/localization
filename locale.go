@@ -9,7 +9,7 @@ type Locale struct {
 	Languages []Language
 }
 
-func (t *Locale) AddLanguages(lang ...string) {
+func (l *Locale) AddLanguages(lang ...string) {
 	if len(lang) == 0 {
 		return
 	}
@@ -23,15 +23,15 @@ func (t *Locale) AddLanguages(lang ...string) {
 		language.Map = make(TextMap, 0)
 	}
 
-	t.Languages = append(t.Languages, languages...)
+	l.Languages = append(l.Languages, languages...)
 }
 
-func (t *Locale) Value(langKey, textKey string) (string, error) {
-	if len(t.Languages) == 0 {
+func (l *Locale) Value(langKey, textKey string) (string, error) {
+	if len(l.Languages) == 0 {
 		return "", fmt.Errorf("cannot extract value, language list is empty")
 	}
 
-	hasLang, lang := t.hasLanguage(langKey)
+	hasLang, lang := l.hasLanguage(langKey)
 	if !hasLang {
 		return "", fmt.Errorf("language '%s' does not exist", langKey)
 	}
@@ -44,8 +44,8 @@ func (t *Locale) Value(langKey, textKey string) (string, error) {
 	return value, nil
 }
 
-func (t *Locale) SetValue(langKey, textKey, value string) error {
-	if len(t.Languages) == 0 {
+func (l *Locale) SetValue(langKey, textKey, value string) error {
+	if len(l.Languages) == 0 {
 		return fmt.Errorf("cannot extract value, language list is empty")
 	}
 
@@ -53,7 +53,7 @@ func (t *Locale) SetValue(langKey, textKey, value string) error {
 		return fmt.Errorf("textKey is empty string")
 	}
 
-	hasLang, lang := t.hasLanguage(langKey)
+	hasLang, lang := l.hasLanguage(langKey)
 	if !hasLang {
 		return fmt.Errorf("language '%s' does not exist", langKey)
 	}
@@ -63,17 +63,48 @@ func (t *Locale) SetValue(langKey, textKey, value string) error {
 	return nil
 }
 
-func (t *Locale) SetValueNoErr(langKey, textKey, value string) {
-	_, lang := t.hasLanguage(langKey)
+func (l *Locale) SetValueNoErr(langKey, textKey, value string) {
+	_, lang := l.hasLanguage(langKey)
 	lang.SetValue(textKey, value)
 }
 
-func (t *Locale) hasLanguage(langKey string) (bool, *Language) {
-	for k, v := range t.Languages {
+func (l *Locale) hasLanguage(langKey string) (bool, *Language) {
+	for k, v := range l.Languages {
 		if strings.EqualFold(langKey, v.Keyword) {
-			return true, &t.Languages[k]
+			return true, &l.Languages[k]
 		}
 	}
 
 	return false, nil
+}
+
+func (l *Locale) AddTranslate(translates ...Translate) error {
+	if len(translates) == 0 {
+		return nil
+	}
+
+	for k, v := range translates {
+		err := locale.SetValue(v.Language, v.Key, v.Value)
+		if err != nil {
+			return fmt.Errorf("translate index=%d: %w",
+				k, err)
+		}
+	}
+
+	return nil
+}
+
+func (l *Locale) AddYAMLFile(files ...*YAMLFile) error {
+	if len(files) == 0 {
+		return nil
+	}
+
+	for _, v := range files {
+		err := l.AddTranslate(v.Translates...)
+		if err != nil {
+			return fmt.Errorf("'%s': %w", v.FileName, err)
+		}
+	}
+
+	return nil
 }
