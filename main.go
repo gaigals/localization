@@ -30,20 +30,27 @@ func initializeTemplates() error {
 	return nil
 }
 
-func readTranslates(path string) ([]Translate, error) {
-	return LoadTranslatesXML(path)
+func readTranslates(path, defaultLanguage string) (*YAMLFile, error) {
+	return LoadTranslates(path, defaultLanguage)
 }
 
-func initializeLocale(translates []Translate) error {
+func initializeLocale(yaml *YAMLFile) error {
 	locale.AddLanguages("lv", "en")
+
+	// Appending new translates.
 	//locale.SetValueNoErr("lv", "hello_world", "Sveicināta, Pasaule!")
 	//locale.SetValueNoErr("en", "hello_world", "Hello, World!")
 
-	for _, v := range translates {
-		err := locale.SetValue(v.Language, v.Key, v.Value)
-		if err != nil {
-			return err
-		}
+	// 1 file manual handling.
+	//err := locale.AddTranslate(xml.Translates...)
+	//if err != nil {
+	//	return err
+	//}
+
+	// Multi file handling.
+	err := locale.AddYAMLFile(yaml)
+	if err != nil {
+		return err
 	}
 
 	return nil
@@ -57,7 +64,7 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	translates, err := readTranslates("locals/home.xml")
+	translates, err := readTranslates("locals/home.yaml", langLV)
 	if err != nil {
 		log.Fatalln(err)
 	}
