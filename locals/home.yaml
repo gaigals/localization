@@ -1,0 +1,24 @@
+hello_world:
+  - en: "Hello, World!"
+  - lv: "Sveika, Pasaule!"
+
+content_0:
+  - en: "Heading"
+  - lv: "Virsraksts"
+
+content_1:
+  - en: "... paragraph ..."
+  - lv: "... paragrāfs ..."
+
+dont_translate_case_0: "netulko mani :)"
+
+dont_translate_case_1:
+  - lv: "netulko mani!"
+
+plural_text:
+  - en:
+    - "1 item"
+    - "2 items"
+  - lv:
+    - "1 lieta"
+    - "2 lietas"
