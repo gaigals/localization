@@ -25,7 +25,7 @@ type YAMLContent struct {
 	Data            map[string]interface{}
 }
 
-func LoadTranslates(path, defaultLanguage string) (*YAMLFile, error) {
+func LoadYAMLTranslateFile(path, defaultLanguage string) (*YAMLFile, error) {
 	bytes, err := loadFileContent(path)
 	if err != nil {
 		return nil, err
@@ -105,49 +105,25 @@ func (c *YAMLContent) getReflectData(data interface{}) (reflect.Type, reflect.Va
 	return reflect.TypeOf(data), reflect.ValueOf(data)
 }
 
-func (c *YAMLContent) string(dataValue reflect.Value) string {
-	return dataValue.String()
-}
-
-func (c *YAMLContent) extractMapRange(dataValue reflect.Value) *reflect.MapIter {
-	return dataValue.MapRange()
-}
-
 func (c *YAMLContent) readContent(key string, dataType reflect.Type, dataValue reflect.Value) ([]Translate, error) {
 	kind := dataType.Kind()
 
+	// Is value a string
+	// key: "some_string"
 	if kind == reflect.String {
-		translate := Translate{
-			Key:      key,
-			Language: c.DefaultLanguage,
-			Value:    dataValue.String(),
-		}
-
-		return []Translate{translate}, nil
+		return []Translate{c.buildTranslateString(key, dataValue)}, nil
 	}
 
+	// Is value slice/list
+	// key:
+	// 		- something: "some string"
 	if kind == reflect.Slice {
-		languages, err := c.getSliceChilds(dataValue)
-		if err != nil {
-			return nil, fmt.Errorf("%s: %w", err)
-		}
-
-		translates := make([]Translate, 0)
-
-		for k := range languages {
-			langType := reflect.TypeOf(languages[k].Interface())
-
-			results, err := c.readContent(key, langType, languages[k])
-			if err != nil {
-				return nil, err
-			}
-
-			translates = append(translates, results...)
-		}
-
-		return translates, nil
+		return c.buildTranslateSlice(key, dataValue)
 	}
 
+	// Is value map
+	// - en: "some_string"
+	// - lv: "some_other_string"
 	if kind == reflect.Map {
 		return c.getMapLangContents(key, dataValue)
 	}
@@ -193,11 +169,37 @@ func (c *YAMLContent) getSliceChilds(dataValue reflect.Value) ([]reflect.Value, 
 
 	for k := range arr {
 		arr[k] = reflect.ValueOf(dataValue.Index(k).Interface())
-
-		//if arr[k].Kind() != reflect.String {
-		//	return nil, fmt.Errorf("not a string")
-		//}
 	}
 
 	return arr, nil
+}
+
+func (c *YAMLContent) buildTranslateString(key string, dataValue reflect.Value) Translate {
+	return Translate{
+		Key:      key,
+		Language: c.DefaultLanguage,
+		Value:    dataValue.String(),
+	}
+}
+
+func (c *YAMLContent) buildTranslateSlice(key string, dataValue reflect.Value) ([]Translate, error) {
+	languages, err := c.getSliceChilds(dataValue)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", err)
+	}
+
+	translates := make([]Translate, 0)
+
+	for k := range languages {
+		langType := reflect.TypeOf(languages[k].Interface())
+
+		results, err := c.readContent(key, langType, languages[k])
+		if err != nil {
+			return nil, err
+		}
+
+		translates = append(translates, results...)
+	}
+
+	return translates, nil
 }
