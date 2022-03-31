@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -31,10 +32,11 @@ func initializeTemplates() error {
 }
 
 func readTranslates(path, defaultLanguage string) (*YAMLFile, error) {
-	return LoadTranslates(path, defaultLanguage)
+	return LoadYAMLTranslateFile(path, defaultLanguage)
 }
 
 func initializeLocale(yaml *YAMLFile) error {
+	locale.AllowDefault = true
 	locale.AddLanguages("lv", "en")
 
 	// Appending new translates.
@@ -67,6 +69,10 @@ func main() {
 	translates, err := readTranslates("locals/home.yaml", langLV)
 	if err != nil {
 		log.Fatalln(err)
+	}
+
+	for _, v := range translates.Translates {
+		fmt.Println(v)
 	}
 
 	err = initializeLocale(translates)
