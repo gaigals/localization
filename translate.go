@@ -31,7 +31,7 @@ func LoadTranslates(path, defaultLanguage string) (*YAMLFile, error) {
 		return nil, err
 	}
 
-	yamlContent := newYAMLContent("lv")
+	yamlContent := newYAMLContent(defaultLanguage)
 
 	err = yamlContent.unmarshal(bytes)
 	if err != nil {
