@@ -17,8 +17,11 @@ func initializeHandlers() {
 
 func initializeTemplates() error {
 	funcMap := template.FuncMap{
-		"GetMapValue": GetMapValue,
-		"Text":        Text,
+		"GetMapValue":       GetMapValue,
+		"Text":              Text,
+		"TextPlural":        TextPlural,
+		"TextDynamic":       TextDynamic,
+		"TextPluralDynamic": TextPluralDynamic,
 	}
 
 	var err error
@@ -36,7 +39,9 @@ func readTranslates(path, defaultLanguage string) (*YAMLFile, error) {
 }
 
 func initializeLocale(yaml *YAMLFile) error {
-	locale.AllowDefault = true
+	// Enable strict usage for translation (no key for lang = error)
+	//locale.StrictUsage = true
+
 	locale.AddLanguages("lv", "en")
 
 	// Appending new translates.
