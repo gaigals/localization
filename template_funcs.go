@@ -6,8 +6,8 @@ import (
 	"reflect"
 )
 
-var ErrNoDynamicInput error = errors.New("no input for dynamic")
-var ErrDynamicNotInt error = errors.New("plural input must be int")
+var ErrNoDynamicInput error = errors.New("no input for dynamic text")
+var ErrDynamicNotInt error = errors.New("plural dynamic input must be int")
 
 func GetMapValue(data TemplateData, key string) (interface{}, error) {
 	value, exist := data[key]
