@@ -5,7 +5,7 @@
 {{ $Lang := (GetMapValue $Page "Lang") }}
 
 <!DOCTYPE html>
-<html lang={{ $Lang }}>
+<html lang="{{ $Lang }}">
 <head>
     <meta charset="UTF-8">
     <title>Home</title>
@@ -16,15 +16,34 @@
         <button type="submit" name="lang" value="lv" style="width: 100px; height: 30px">lv</button>
     </form>
 
+<!--    Basic translation examples-->
     <h1>{{ Text $Locale $Lang "hello_world" }}</h1>
 
     <h3>{{ Text $Locale $Lang "content_0" }}</h3>
     <p>{{ Text $Locale $Lang "content_1" }}</p>
     <br>
-    <p>{{ Text $Locale $Lang "dont_translate_case_0" }}</p>
-    <p>{{ Text $Locale $Lang "dont_translate_case_1" }}</p>
 
-    <p>{{ Text $Locale $Lang "plural_text" }}</p>
+
+    <p><b>Do not translate (only 1 language available)</b></p>
+    <p>{{ Text $Locale $Lang "dont_translate_simple_lv" }}</p>
+    <p>{{ Text $Locale $Lang "dont_translate_lv" }}</p>
+    <p>{{ Text $Locale $Lang "dont_translate_en" }}</p>
+    <br>
+
+    <p><b>Hard-coded plural handling</b></p>
+    <p>{{ TextPlural $Locale $Lang "plural_text_hard_coded" false }}</p>
+    <p>{{ TextPlural $Locale $Lang "plural_text_hard_coded" true }}</p>
+    <br>
+
+    <p><b>Dynamic plural handling</b></p>
+    <p>{{ TextPluralDynamic $Locale $Lang "plural_text_dynamic" 1 }}</p>
+    <p>{{ TextPluralDynamic $Locale $Lang "plural_text_dynamic" 3 }}</p>
+    <p>{{ TextPluralDynamic $Locale $Lang "plural_text_dynamic" 10 }}</p>
+    <br>
+
+    <p><b>Dynamic text</b></p>
+    <p>{{ TextDynamic $Locale $Lang "dynamic_hello" "Jānis Bērziņš" }}</p>
+    <p>{{ TextDynamic $Locale $Lang "dynamic_bill_sum" 7.23 }}</p>
 </body>
 </html>
 {{ end }}

@@ -1,3 +1,5 @@
+##### BASIC TRANSLATION EXAMPLES #####
+
 hello_world:
   - en: "Hello, World!"
   - lv: "Sveika, Pasaule!"
@@ -10,20 +12,51 @@ content_1:
   - en: "... paragraph ..."
   - lv: "... paragrāfs ..."
 
-dont_translate_case_0: "netulko mani :)"
+##### DO NOT TRANSLATE #####
 
-dont_translate_case_1:
-  - lv: "netulko mani!"
+dont_translate_simple_lv: "netulko mani"
 
-dont_translate_case_2:
+dont_translate_lv:
+  - lv: "netulko arī mani"
+
+dont_translate_en:
+  - en: "do not translate me"
+
+
+#### PLURAL #####
+
+dont_translate_lv_plural:
   - lv:
-    - "1 netulkojums"
-    - "2 netulkojumi"
+      - "1 persona"
+      - "2 personas"
 
-plural_text:
+plural_text_hard_coded:
   - en:
     - "1 item"
     - "2 items"
   - lv:
     - "1 lieta"
     - "2 lietas"
+
+#### DYNAMIC ####
+
+# %d - stands for number (non-decimal)
+# %f - stands for decimal number
+# %.[number]f controls digit count after dot, for example: "%.2f" will result in "7.12" and "%.3f" will result "7.120".
+# %s - stands for string/text (for example, "Jānis Bērziņš")
+
+dynamic_hello:
+  - lv: "Labdien, %s"
+  - en: "Hello, %s"
+
+dynamic_bill_sum:
+  - lv: "Kopējā summa: %.2f EUR"
+  - en: "Final amount: %.2f EUR"
+
+plural_text_dynamic:
+  - en:
+      - "%d item"
+      - "%d items"
+  - lv:
+      - "%d lieta"
+      - "%d lietas"
