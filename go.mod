@@ -1,4 +1,4 @@
-module main
+module localization
 
 go 1.17
 
