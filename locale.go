@@ -6,8 +6,8 @@ import (
 )
 
 type Locale struct {
-	Languages    []Language
-	AllowDefault bool
+	Languages   []Language
+	StrictUsage bool // Is other language usage allowed if key does not exist for given lang.
 }
 
 func (l *Locale) AddLanguages(lang ...string) {
@@ -28,31 +28,54 @@ func (l *Locale) AddLanguages(lang ...string) {
 }
 
 func (l *Locale) Value(langKey, textKey string) (string, error) {
-	if len(l.Languages) == 0 {
-		return "", fmt.Errorf("cannot extract value, language list is empty")
-	}
-
 	hasLang, lang := l.hasLanguage(langKey)
 	if !hasLang {
 		return "", fmt.Errorf("language '%s' does not exist", langKey)
 	}
 
-	value := lang.Value(textKey)
-	if value == "" && !l.AllowDefault {
-		return "", fmt.Errorf("language '%s' does not contain key '%s'", langKey, textKey)
-	}
-	if value == "" {
-		value = l.Languages[0].Value(textKey)
-		if value == "" {
-			return "", fmt.Errorf("language '%s' (backup) does not contain key '%s'",
-				langKey, textKey)
+	langList := l.buildLanguageList(lang)
+	text := ""
+
+	for k := range langList {
+		text = langList[k].Value(textKey)
+
+		if text != "" {
+			return text, nil
 		}
 	}
 
-	return value, nil
+	if l.StrictUsage {
+		return "", fmt.Errorf("language '%s' does not contain key '%s'", langKey, textKey)
+	}
+
+	return "", fmt.Errorf("non of languages contain key '%s'", textKey)
 }
 
-func (l *Locale) SetValue(langKey, textKey, value string) error {
+func (l *Locale) ValuePlural(langKey, textKey string) (string, error) {
+	hasLang, lang := l.hasLanguage(langKey)
+	if !hasLang {
+		return "", fmt.Errorf("language '%s' does not exist", langKey)
+	}
+
+	langList := l.buildLanguageList(lang)
+	text := ""
+
+	for k := range langList {
+		text = langList[k].ValuePlural(textKey)
+
+		if text != "" {
+			return text, nil
+		}
+	}
+
+	if l.StrictUsage {
+		return "", fmt.Errorf("language '%s' does not contain key '%s'", langKey, textKey)
+	}
+
+	return "", fmt.Errorf("non of languages contain key '%s'", textKey)
+}
+
+func (l *Locale) SetValue(langKey, textKey, value, plural string) error {
 	if len(l.Languages) == 0 {
 		return fmt.Errorf("cannot extract value, language list is empty")
 	}
@@ -65,14 +88,14 @@ func (l *Locale) SetValue(langKey, textKey, value string) error {
 	if !hasLang {
 		return fmt.Errorf("language '%s' does not exist", langKey)
 	}
-	lang.SetValue(textKey, value)
+	lang.SetValue(textKey, value, plural)
 
 	return nil
 }
 
-func (l *Locale) SetValueNoErr(langKey, textKey, value string) {
+func (l *Locale) SetValueNoErr(langKey, textKey, value, plural string) {
 	_, lang := l.hasLanguage(langKey)
-	lang.SetValue(textKey, value)
+	lang.SetValue(textKey, value, plural)
 }
 
 func (l *Locale) hasLanguage(langKey string) (bool, *Language) {
@@ -91,7 +114,7 @@ func (l *Locale) AddTranslate(translates ...Translate) error {
 	}
 
 	for k, v := range translates {
-		err := locale.SetValue(v.Language, v.Key, v.Value)
+		err := locale.SetValue(v.Language, v.Key, v.Value, v.Plural)
 		if err != nil {
 			return fmt.Errorf("translate index=%d: %w",
 				k, err)
@@ -114,4 +137,26 @@ func (l *Locale) AddYAMLFile(files ...*YAMLFile) error {
 	}
 
 	return nil
+}
+
+func (l *Locale) buildLanguageList(language *Language) []*Language {
+	if l.StrictUsage {
+		return []*Language{language}
+	}
+
+	keys := make([]*Language, len(l.Languages))
+	keys[0] = language
+
+	idx := 1
+
+	currentLangKey := language.Keyword
+
+	for k, v := range l.Languages {
+		if v.Keyword != currentLangKey {
+			keys[idx] = &l.Languages[k]
+			idx++
+		}
+	}
+
+	return keys
 }
