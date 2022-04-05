@@ -38,7 +38,7 @@ func LoadYAMLTranslateFile(path, defaultLanguage string) (*YAMLFile, error) {
 		return nil, fmt.Errorf("failed to unmarshal '%s': %w", path, err)
 	}
 
-	yamlFile := YAMLFile{}
+	yamlFile := YAMLFile{FileName: path}
 
 	yamlFile.Translates, err = yamlContent.parse()
 	if err != nil {
@@ -185,7 +185,7 @@ func (c *YAMLContent) buildTranslateString(key string, dataValue reflect.Value) 
 func (c *YAMLContent) buildTranslateSlice(key string, dataValue reflect.Value) ([]Translate, error) {
 	languages, err := c.getSliceChilds(dataValue)
 	if err != nil {
-		return nil, fmt.Errorf("%s: %w", err)
+		return nil, fmt.Errorf("%s: %w", key, err)
 	}
 
 	translates := make([]Translate, 0)
