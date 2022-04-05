@@ -44,15 +44,9 @@ func initializeLocale(yaml *YAMLFile) error {
 
 	locale.AddLanguages("lv", "en")
 
-	// Appending new translates.
-	//locale.SetValueNoErr("lv", "hello_world", "Sveicināta, Pasaule!")
-	//locale.SetValueNoErr("en", "hello_world", "Hello, World!")
-
-	// 1 file manual handling.
-	//err := locale.AddTranslate(xml.Translates...)
-	//if err != nil {
-	//	return err
-	//}
+	// Appending new translates (last param - plural).
+	//locale.SetValueNoErr("lv", "hello_world", "Sveicināta, Pasaule!", "")
+	//locale.SetValueNoErr("en", "hello_world", "Hello, World!", "")
 
 	// Multi file handling.
 	err := locale.AddYAMLFile(yaml)
