@@ -114,7 +114,7 @@ func (l *Locale) AddTranslate(translates ...Translate) error {
 	}
 
 	for k, v := range translates {
-		err := locale.SetValue(v.Language, v.Key, v.Value, v.Plural)
+		err := l.SetValue(v.Language, v.Key, v.Value, v.Plural)
 		if err != nil {
 			return fmt.Errorf("translate index=%d: %w",
 				k, err)
