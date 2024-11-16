@@ -33,16 +33,17 @@ func NewLocale(strictUsage bool, lang ...string) (*Locale, error) {
 // GlobalYAMLLoad loads YAML files with given pattern.
 // Examples:
 // "file.yml", "*.yaml", "path/*", "**/*.yml"
-func (l *Locale) GlobalYAMLLoad(pattern string) error {
+func (l *Locale) GlobalYAMLLoad(defaultLang, pattern string) error {
 	// Use filepath.Glob to find matching files
 	files, err := filepath.Glob(pattern)
 	if err != nil {
 		return fmt.Errorf("locale: failed to match pattern: %w", err)
 	}
 
-	fmt.Println("PATH", pattern, files)
-	for _, file := range files {
-		fmt.Println(file)
+	fmt.Println(files)
+	err = l.LoadYAMLFile(defaultLang, files...)
+	if err != nil {
+		return fmt.Errorf("locale: yaml load error: %w", err)
 	}
 
 	return nil
