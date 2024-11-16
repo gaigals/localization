@@ -2,6 +2,8 @@ package localization
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -27,6 +29,41 @@ func NewLocale(strictUsage bool, lang ...string) (*Locale, error) {
 	}
 
 	return &locale, nil
+}
+
+// GlobalYAMLLoad loads YAML files with given pattern.
+// Params:
+// defaultLanguage - default language for non-list values (some_key: "value").
+// path - YAML file path.
+// pattern - yaml file locaation/pattern, Examples:
+// "file.yml", "*.yaml", "path/*", "**/*.yml"
+func (l *Locale) GlobalYAMLLoad(defaultLang, pattern string) error {
+	// Use filepath.Glob to find matching files
+	files, err := filepath.Glob(pattern)
+	if err != nil {
+		return fmt.Errorf("locale: failed to match pattern: %w", err)
+	}
+
+	parsedFiles := make([]string, 0)
+
+	for _, file := range files {
+		info, err := os.Stat(file)
+		if err != nil {
+			return fmt.Errorf("locale: failed to stat file %s: %w", file, err)
+		}
+		if info.IsDir() {
+			continue
+		}
+
+		parsedFiles = append(parsedFiles, file)
+	}
+
+	err = l.LoadYAMLFile(defaultLang, parsedFiles...)
+	if err != nil {
+		return fmt.Errorf("locale: yaml load error: %w", err)
+	}
+
+	return nil
 }
 
 // AddLanguages can be used to add new languages to Locale.
