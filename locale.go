@@ -37,9 +37,10 @@ func (l *Locale) GlobalYAMLLoad(pattern string) error {
 	// Use filepath.Glob to find matching files
 	files, err := filepath.Glob(pattern)
 	if err != nil {
-		return fmt.Errorf("failed to match pattern: %w", err)
+		return fmt.Errorf("locale: failed to match pattern: %w", err)
 	}
 
+	fmt.Println("PATH", pattern, files)
 	for _, file := range files {
 		fmt.Println(file)
 	}
