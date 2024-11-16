@@ -23,7 +23,7 @@ type Locale struct {
 func NewLocale(strictUsage bool, lang ...string) (*Locale, error) {
 	locale := Locale{StrictUsage: strictUsage}
 
-	err := locale.addLanguages(lang...)
+	err := locale.AddLanguages(lang...)
 	if err != nil {
 		return nil, err
 	}
@@ -35,7 +35,7 @@ func NewLocale(strictUsage bool, lang ...string) (*Locale, error) {
 // Params:
 // defaultLanguage - default language for non-list values (some_key: "value").
 // path - YAML file path.
-// pattern - yaml file locaation/pattern, examples:
+// pattern - yaml file locaation/pattern, Examples:
 // "file.yml", "*.yaml", "path/*", "**/*.yml"
 func (l *Locale) GlobalYAMLLoad(defaultLang, pattern string) error {
 	// Use filepath.Glob to find matching files
@@ -66,11 +66,11 @@ func (l *Locale) GlobalYAMLLoad(defaultLang, pattern string) error {
 	return nil
 }
 
-// addLanguages can be used to add new languages to Locale.
+// AddLanguages can be used to add new languages to Locale.
 // Returns error if something went wrong.
 // Params:
 // lang - list of languages keywords to initialize ("en", "lv" etc).
-func (l *Locale) addLanguages(lang ...string) error {
+func (l *Locale) AddLanguages(lang ...string) error {
 	if len(lang) == 0 {
 		return nil
 	}
