@@ -2,6 +2,7 @@ package localization
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
 	"strings"
 )
@@ -40,8 +41,22 @@ func (l *Locale) GlobalYAMLLoad(defaultLang, pattern string) error {
 		return fmt.Errorf("locale: failed to match pattern: %w", err)
 	}
 
-	fmt.Println(files)
-	err = l.LoadYAMLFile(defaultLang, files...)
+	parsedFiles := make([]string, 0)
+
+	for _, file := range files {
+		info, err := os.Stat(file)
+		if err != nil {
+			return fmt.Errorf("locale: failed to stat file %s: %w", file, err)
+		}
+		if info.IsDir() {
+			continue
+		}
+
+		parsedFiles = append(parsedFiles, file)
+	}
+
+	fmt.Println(parsedFiles)
+	err = l.LoadYAMLFile(defaultLang, parsedFiles...)
 	if err != nil {
 		return fmt.Errorf("locale: yaml load error: %w", err)
 	}
