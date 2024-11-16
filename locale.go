@@ -2,6 +2,7 @@ package localization
 
 import (
 	"fmt"
+	"path/filepath"
 	"strings"
 )
 
@@ -21,7 +22,7 @@ type Locale struct {
 func NewLocale(strictUsage bool, lang ...string) (*Locale, error) {
 	locale := Locale{StrictUsage: strictUsage}
 
-	err := locale.AddLanguages(lang...)
+	err := locale.addLanguages(lang...)
 	if err != nil {
 		return nil, err
 	}
@@ -29,11 +30,28 @@ func NewLocale(strictUsage bool, lang ...string) (*Locale, error) {
 	return &locale, nil
 }
 
-// AddLanguages can be used to add new languages to Locale.
+// GlobalYAMLLoad loads YAML files with given pattern.
+// Examples:
+// "file.yml", "*.yaml", "path/*", "**/*.yml"
+func (l *Locale) GlobalYAMLLoad(pattern string) error {
+	// Use filepath.Glob to find matching files
+	files, err := filepath.Glob(pattern)
+	if err != nil {
+		return fmt.Errorf("failed to match pattern: %w", err)
+	}
+
+	for _, file := range files {
+		fmt.Println(file)
+	}
+
+	return nil
+}
+
+// addLanguages can be used to add new languages to Locale.
 // Returns error if something went wrong.
 // Params:
 // lang - list of languages keywords to initialize ("en", "lv" etc).
-func (l *Locale) AddLanguages(lang ...string) error {
+func (l *Locale) addLanguages(lang ...string) error {
 	if len(lang) == 0 {
 		return nil
 	}
