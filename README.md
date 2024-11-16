@@ -109,6 +109,10 @@ func NewLocale(strictUsage bool, lang ...string) (*Locale, error)
 
 `Locale` public methods:
 ```go
+// GlobalYAMLLoad can be used to load yaml files directly into locale.
+// Examples: "locales/*", "locales/*.yml", "locales/**/*.yml"
+func (l *Locale) GlobalYAMLLoad(defaultLang, pattern string) error {
+
 // AddLanguages can be used to add new languages to Locale.
 func (l *Locale) AddLanguages(lang ...string) error
 
@@ -272,10 +276,18 @@ if err != nil {
 }
 ```
 
-
 ### Loading translations from YAML file:
 
-Most simple and best way in 1 method call:
+To simply load YAML files with given pattern directly in created `Locale` with:
+```go
+err = createdLocale.GlobalYAMLLoad("lv", "locales/*.yml")
+if err != nil {
+    log.Fatalf(err)
+}
+``
+
+
+But if you want manually load every single yaml file, you can do it in this way:
 ```go
 // Load 2 YAML translates and set "en" as default language.
 // Default language is required of for loader set target language
